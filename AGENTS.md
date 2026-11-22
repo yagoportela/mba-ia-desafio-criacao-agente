@@ -11,7 +11,7 @@
 - 1 Agente Principal (`recepcao_aurora`): faz triagem e delega. NÃO possui o conteúdo de `dados/regulamento.md` nas instruções.
 - Especialista 1 (`especialista_operacional`): gerencia reservas e visitantes.
 - Especialista 2 (`especialista_regulamento`): consulta `dados/regulamento.md` sob demanda via tool.
-- IMPORTANTE (Retomada de Confirmação): usar `AgentTool` para encapsular os especialistas dentro do agente principal, garantindo que o `Runner` roteie o `FunctionResponse` de `adk_request_confirmation` corretamente mesmo após reiniciar a API.
+- IMPORTANTE (Retomada de Confirmação): usar sub-agentes nativos (`sub_agents` + `transfer_to_agent`), não `AgentTool`. No ADK 2.2.0 o `AgentTool` executa o especialista em um Runner interno com `InMemorySessionService`, e o evento `adk_request_confirmation` fica fora da sessão persistida. Com sub-agentes nativos, o Runner identifica o autor do pedido e reexecuta a tool nele, inclusive após reiniciar a API.
 
 ## As 5 Garantias (Implementação Obrigatória em Código)
 1. **Garantia 1 (Confirmação):** `reservar_area` (quando `taxa > 0`) e `autorizar_visitante` devem chamar `tool_context.request_confirmation(...)` na primeira execução e só gravar no SQLite quando `tool_context.tool_confirmation.confirmed is True`. Persistir IDs de confirmações pendentes no SQLite (`storage/condominio.db`). Retornar HTTP `409` em `POST /sessoes/{session_id}/confirmacoes` se o `id` não existir naquela sessão ou já tiver sido respondido.

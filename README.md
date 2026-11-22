@@ -2,7 +2,7 @@
 
 Assistente multiagente para moradores do Residencial Aurora, construído com Google ADK 2.2.0 e exposto por uma API FastAPI. O modelo conduz a conversa; as regras críticas — confirmação de cobrança/acesso, isolamento por apartamento, persistência, consulta sob demanda ao regulamento e exclusividade de reservas — são aplicadas por código e pelo SQLite, não pelo que o modelo decide.
 
-Stack: Python 3.12+, `uv`, FastAPI, Uvicorn, Google ADK 2.2.0, SQLite (`aiosqlite`) e `litellm` para o provedor DeepSeek. O provedor é escolhido em `src/llm.py`: Gemini quando `GOOGLE_API_KEY` está preenchida, DeepSeek quando apenas `DEEPSEEK_API_KEY` está preenchida, e erro na subida quando nenhuma existe. Com as duas, Gemini tem preferência.
+Stack: Python 3.12+, `uv`, FastAPI, Uvicorn, Google ADK 2.2.0, SQLite (`aiosqlite`) e `litellm` para o provedor DeepSeek. O provedor é escolhido em `src/llm.py`: Gemini quando `GOOGLE_API_KEY` (ou `GEMINI_API_KEY`) está preenchida, DeepSeek quando apenas `DEEPSEEK_API_KEY` está preenchida, e erro na subida quando nenhuma existe. Com as duas, Gemini tem preferência.
 
 ## Arquitetura
 
@@ -644,7 +644,7 @@ Por que a regra não depende do modelo: a exclusividade é uma restrição do SQ
 cp .env.example .env
 ```
 
-No Windows (PowerShell), use `Copy-Item .env.example .env`. Preencha `GOOGLE_API_KEY` com a chave do Google AI Studio. Opcionalmente, preencha `DEEPSEEK_API_KEY` para usar DeepSeek. Se as duas estiverem preenchidas, o Gemini tem preferência; se nenhuma estiver, a API não sobe e exibe um erro explicando o que falta. `GEMINI_MODEL` e `DEEPSEEK_MODEL` são opcionais: quando vazios, o código usa `gemini-2.5-flash` e `deepseek-flash`, respectivamente. O `.env` e o diretório `storage/` estão no `.gitignore`; o `.env.example` contém apenas os nomes das variáveis, sem valores.
+No Windows (PowerShell), use `Copy-Item .env.example .env`. Preencha `GOOGLE_API_KEY` (ou `GEMINI_API_KEY`) com a chave do Google AI Studio. Opcionalmente, preencha `DEEPSEEK_API_KEY` para usar DeepSeek. Se as duas estiverem preenchidas, o Gemini tem preferência; se nenhuma estiver, a API não sobe e exibe um erro explicando o que falta. `GEMINI_MODEL` e `DEEPSEEK_MODEL` são opcionais: quando vazios, o código usa `gemini-2.5-flash` e `deepseek-flash`, respectivamente. O `.env` e o diretório `storage/` estão no `.gitignore`; o `.env.example` contém apenas os nomes das variáveis, sem valores.
 
 **Instalação das dependências.**
 
@@ -663,7 +663,7 @@ O comando remove `storage/condominio.db` e `storage/sessions.db` (incluindo os a
 **Subir a API.**
 
 ```bash
-uv run uvicorn src.main:app --host 0.0.0.0 --port 8000
+uv run python -m uvicorn src.main:app --host 0.0.0.0 --port 8000
 ```
 
 A API responde em `http://localhost:8000`; a documentação interativa fica em `http://localhost:8000/docs`. Na primeira subida, o banco de negócio é criado e semeado automaticamente se ainda não existir. Para conferir o estado inicial:
