@@ -20,14 +20,11 @@ usa ``transfer_to_agent``, que preserva os eventos na sessão persistida.
 
 from __future__ import annotations
 
-import os
-
 from google.adk.agents import LlmAgent
 from google.adk.models import BaseLlm
 
+from .llm import selecionar_modelo
 from .tools import TOOLS_OPERACIONAIS, TOOLS_REGULAMENTO
-
-MODELO_PADRAO = "gemini-2.5-flash"
 
 _INSTRUCAO_RECEPCAO = """\
 Você é a recepção virtual do Residencial Aurora.
@@ -106,9 +103,12 @@ def criar_agente_raiz(
 
     Args:
         modelo: nome do modelo Gemini ou instância de ``BaseLlm``. Quando
-            omitido, usa ``GEMINI_MODEL`` ou ``gemini-2.5-flash``.
+            omitido, ``selecionar_modelo`` usa Gemini se houver
+            ``GOOGLE_API_KEY``/``GEMINI_API_KEY`` e, na ausência dela, DeepSeek
+            se houver ``DEEPSEEK_API_KEY``. Sem nenhuma das chaves, levanta
+            ``RuntimeError``.
     """
-    modelo = modelo or os.getenv("GEMINI_MODEL") or MODELO_PADRAO
+    modelo = modelo or selecionar_modelo()
 
     especialista_operacional = LlmAgent(
         name="especialista_operacional",

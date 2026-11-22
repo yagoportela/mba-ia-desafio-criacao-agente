@@ -3,6 +3,7 @@
 ## Stack e Regras Rígidas
 - Python 3.12+ gerenciado exclusivamente com `uv` (`uv run ...`).
 - Google ADK (`google-adk==2.2.0`), FastAPI, Uvicorn, SQLite (`sqlite3` + `aiosqlite`).
+- Provedor de LLM em `src/llm.py`: usa Gemini quando `GOOGLE_API_KEY`/`GEMINI_API_KEY` está preenchida (preferência quando as duas chaves existem) e, na ausência dela, DeepSeek via `LiteLlm` quando `DEEPSEEK_API_KEY` está preenchida. Sem nenhuma das duas, a API falha na subida com erro explicativo.
 - NUNCA alterar arquivos dentro de `dados/`.
 - NUNCA usar `InMemorySessionService`; usar sempre `DatabaseSessionService(db_url="sqlite+aiosqlite:///storage/sessions.db")`.
 

@@ -85,8 +85,10 @@ async def lifespan(_: FastAPI):
 
     await database.inicializar_banco()
 
-    _session_service = DatabaseSessionService(db_url=SESSIONS_DB_URL)
+    # Resolve o provedor de LLM antes de abrir o serviço de sessões: sem
+    # chave configurada, a API falha na subida sem manter o banco aberto.
     agente = criar_agente_raiz()
+    _session_service = DatabaseSessionService(db_url=SESSIONS_DB_URL)
     app_adk = App(
         name=APP_NAME,
         root_agent=agente,
